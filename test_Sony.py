@@ -2,14 +2,19 @@
 # improvement upon cqf37
 from __future__ import division
 import os, scipy.io
-# import tensorflow.compat.v1 as tf
-# tf.disable_v2_behavior()
-# import tensorflow.contrib.slim as slim
-import tf
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+import tensorflow as tf
+#import tensorflow.contrib.slim as slim
 import tf_slim as slim
 import numpy as np
 import rawpy
+import warnings
 import glob
+#warnings.filterwarnings("ignore", category=DeprecationWarning)
+tf.get_logger().setLevel('ERROR')
+
+
+
 
 input_dir = './dataset/Sony/short/'
 gt_dir = './dataset/Sony/long/'
@@ -32,7 +37,7 @@ def lrelu(x):
 
 def upsample_and_concat(x1, x2, output_channels, in_channels):
     pool_size = 2
-    deconv_filter = tf.Variable(tf.truncated_normal([pool_size, pool_size, output_channels, in_channels], stddev=0.02))
+    deconv_filter = tf.Variable(tf.random.truncated_normal([pool_size, pool_size, output_channels, in_channels], stddev=0.02))
     deconv = tf.nn.conv2d_transpose(x1, deconv_filter, tf.shape(x2), strides=[1, pool_size, pool_size, 1])
 
     deconv_output = tf.concat([deconv, x2], 3)
@@ -78,7 +83,7 @@ def network(input):
     conv9 = slim.conv2d(conv9, 32, [3, 3], rate=1, activation_fn=lrelu, scope='g_conv9_2')
 
     conv10 = slim.conv2d(conv9, 12, [1, 1], rate=1, activation_fn=None, scope='g_conv10')
-    out = tf.depth_to_space(conv10, 2)
+    out = tf.compat.v1.depth_to_space(conv10, 2)
     return out
 
 
@@ -102,12 +107,12 @@ def pack_raw(raw):
 tf.compat.v1.disable_eager_execution()
 sess = tf.compat.v1.Session()
 # sess = tf.Session()
-in_image = tf.placeholder(tf.float32, [None, None, None, 4])
-gt_image = tf.placeholder(tf.float32, [None, None, None, 3])
+in_image = tf.compat.v1.placeholder(tf.float32, [None, None, None, 4])
+gt_image = tf.compat.v1.placeholder(tf.float32, [None, None, None, 3])
 out_image = network(in_image)
 
-saver = tf.train.Saver()
-sess.run(tf.global_variables_initializer())
+saver = tf.compat.v1.train.Saver()
+sess.run(tf.compat.v1.global_variables_initializer())
 ckpt = tf.train.get_checkpoint_state(checkpoint_dir)
 if ckpt:
     print('loaded ' + ckpt.model_checkpoint_path)
