@@ -2,12 +2,13 @@ from __future__ import division
 import os, scipy.io
 import tensorflow as tf
 import tensorflow.contrib.slim as slim
+#import tf_slim as slim
 import numpy as np
 import rawpy
 import glob
 
-input_dir = './dataset/Fuji/short/'
-gt_dir = './dataset/Fuji/long/'
+input_dir = './dataset/test/'
+gt_dir = './dataset/test/'
 checkpoint_dir = './checkpoint/Fuji/'
 result_dir = './result_Fuji/'
 
@@ -15,7 +16,7 @@ result_dir = './result_Fuji/'
 test_fns = glob.glob(gt_dir + '1*.RAF')
 test_ids = [int(os.path.basename(test_fn)[0:5]) for test_fn in test_fns]
 
-
+print(test_fns)
 def lrelu(x):
     return tf.maximum(x * 0.2, x)
 
