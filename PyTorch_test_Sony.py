@@ -1,0 +1,73 @@
+# import packages
+import os
+import numpy as np
+import rawpy
+import glob
+import torch
+from PIL import Image
+
+from PyTorch_helpers import SeeInTheDarkModel, pack_raw
+
+
+# set up device
+device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+print(f'Device: {device}')
+
+# define directories
+input_dir = './dataset/Sony/short/'
+
+torch_dir = './Pytorch/'
+result_dir = './PyTorch/test_result_Sony/'
+
+# fail safes in case the directories do not exist
+if not os.path.isdir(torch_dir):
+    os.makedirs(torch_dir)
+
+if not os.path.isdir(result_dir):
+    os.makedirs(result_dir)
+
+# connect to trained model
+model_dir = './PyTorch/model_Sony/'
+model_name = 'checkpoint_sony_e4000.pth'
+
+# get test IDs
+test_fns = glob.glob(input_dir + '1*.ARW')
+test_ids = [int(os.path.basename(test_fn)[0:5]) for test_fn in test_fns]
+
+# set up patch size
+patch_size = 512
+
+model = SeeInTheDarkModel()
+model.load_state_dict(torch.load(model_dir + model_name, map_location=torch.device(device)))
+model = model.to(device)
+
+for test_id in test_ids:
+    in_files = glob.glob(input_dir + '%05d*.ARW' % test_id)
+    for k in range(len(in_files)):
+        in_path = in_files[k]
+        in_fn = os.path.basename(in_path)
+
+        # here the original papers uses the ground truths to determine the ratio between expose time
+        # we have chosen not to use the ground truths in any way in our test
+        # therefore we presume the ratio to be 250
+        ratio = 250
+
+        raw = rawpy.imread(in_path)
+        input_full = np.expand_dims(pack_raw(raw, patch_size=patch_size), axis=0) * ratio
+
+        im = raw.postprocess(use_camera_wb=True, half_size=False, no_auto_bright=True, output_bps=16)
+        scale_full = np.expand_dims(np.float32(im / 65535.0), axis=0)
+
+        input_full = np.minimum(input_full, 1.0)
+
+        input_img = torch.from_numpy(input_full).permute(0, 3, 1, 2).to(device)
+        output = model(input_img)
+        output = output.permute(0, 2, 3, 1).cpu().data.numpy()
+        output = np.minimum(np.maximum(output, 0), 1)[0, :, :, :]
+
+        Image.fromarray((output * 255).astype('uint8')).save(result_dir + '%s_%d_out.jpg' % (in_fn[:-4], ratio))
+
+
+
+
+
