@@ -67,7 +67,6 @@ for test_id in test_ids:
 
         Image.fromarray((output * 255).astype('uint8')).save(result_dir + '%s_%d_out.jpg' % (in_fn[:-4], ratio))
 
-
-
+        print('Done with filename: %s' % in_fn[:-4])
 
 
