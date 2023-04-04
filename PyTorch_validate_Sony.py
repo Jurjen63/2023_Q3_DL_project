@@ -17,7 +17,7 @@ print(f'Device: {device}')
 input_dir = './dataset/Sony/short/'
 
 torch_dir = './Pytorch/'
-result_dir = './PyTorch/test_result_Sony/'
+result_dir = './PyTorch/validate_result_Sony/'
 
 # fail safes in case the directories do not exist
 if not os.path.isdir(torch_dir):
@@ -31,7 +31,7 @@ model_dir = './PyTorch/model_Sony/'
 model_name = 'checkpoint_sony_e4000.pth'
 
 # get test IDs
-test_fns = glob.glob(input_dir + '1*.ARW')
+test_fns = glob.glob(input_dir + '2*.ARW')
 test_ids = [int(os.path.basename(test_fn)[0:5]) for test_fn in test_fns]
 total = len(test_ids)
 test_ids = list(set(test_ids))
@@ -43,6 +43,7 @@ model = SeeInTheDarkModel()
 model.load_state_dict(torch.load(model_dir + model_name, map_location=torch.device(device)))
 model = model.to(device)
 
+
 count = 0
 for test_id in test_ids:
     in_files = glob.glob(input_dir + '%05d*.ARW' % test_id)
@@ -52,19 +53,18 @@ for test_id in test_ids:
         in_fn = os.path.basename(in_path)
 
         print_progress(count, total, prefix='Processing image %s:' % in_fn[:-4], suffix='Complete')
-
         # here the original papers uses the ground truths to determine the ratio between expose time
         # we have chosen not to use the ground truths in any way in our test
         # therefore we use the following code that determines the ratio using the name of the RAW image
         exp_time = in_fn[-8:-4]
         if exp_time == '.04s':
-            ratio = 250
+            ratio = 10/0.04
         elif exp_time == '0.1s':
-            ratio = 100
+            ratio = 10/0.1
         elif exp_time == '033s':
-            ratio = 303
+            ratio = 10 / 0.033
         else:
-            ratio = 300
+            ratio = 250
 
         raw = rawpy.imread(in_path)
         input_full = np.expand_dims(pack_raw(raw, patch_size=patch_size), axis=0) * ratio
@@ -81,5 +81,4 @@ for test_id in test_ids:
 
         Image.fromarray((output * 255).astype('uint8')).save(result_dir + '%s_%d_out.png' % (in_fn[:-4], ratio))
 
-        # print('Done with filename: %s' % in_fn[:-4])
-
+print("Done with processing images")

@@ -4,6 +4,7 @@
 import numpy as np
 import torch
 from torch import nn as nn
+import sys
 
 
 class SeeInTheDarkModel(nn.Module):
@@ -127,3 +128,17 @@ def pack_raw(raw, patch_size):
                           im[1:H:2, 1:W:2, :],
                           im[1:H:2, 0:W:2, :]), axis=2)
     return out
+
+
+def print_progress(iteration, total, prefix='', suffix='', length=50, fill='█'):
+    """"
+    Prints the progress of processing the images
+    """
+    percent = "{0:.0f}".format(100 * (iteration / float(total)))
+    filled_length = int(length * iteration // total)
+    bar = fill * filled_length + '-' * (length - filled_length)
+    sys.stdout.write('\r%s |%s| %s%% %s (%d / %d)' % (prefix, bar, percent, suffix, iteration, total)),
+    sys.stdout.flush()
+    if iteration == total:
+        sys.stdout.write('\n')
+        sys.stdout.flush()
