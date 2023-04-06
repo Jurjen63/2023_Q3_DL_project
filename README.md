@@ -1,6 +1,6 @@
 # 2023_Q3_DL_project: Reproducibility Learning-to-See-in-the-Dark
 ### Group 10:
-#### David Janssen: ...</br> Jurjen Scharringa: 4708652 </br> Xavier Fung-A-Jou
+#### David Janssen: 4713826 </br> Jurjen Scharringa: 4708652 </br> Xavier Fung-A-Jou: 4697596
 
 
 ## Introduction
