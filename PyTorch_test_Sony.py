@@ -16,7 +16,7 @@ print(f'Device: {device}')
 # define directories
 input_dir = './dataset/Sony/short/'
 
-torch_dir = './Pytorch/'
+torch_dir = './PyTorch/'
 result_dir = './PyTorch/test_result_Sony/'
 
 # fail safes in case the directories do not exist

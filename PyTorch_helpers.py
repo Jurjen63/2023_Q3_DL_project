@@ -122,7 +122,6 @@ def pack_raw(raw, patch_size):
     im = np.expand_dims(im, axis=2)
     H, W, _ = im.shape
 
-
     out = np.concatenate((im[0:H:2, 0:W:2, :],
                           im[0:H:2, 1:W:2, :],
                           im[1:H:2, 1:W:2, :],
