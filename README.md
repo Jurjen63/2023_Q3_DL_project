@@ -44,7 +44,7 @@ Train the Sony model by running the ```PyTorch_train_Sony.py``` file. The result
 If you wish to use our pre-trained, use the ```checkpoint_sony_e4000.pth``` file in '/PyTorch/model_Sony' that has already been uploaded to this GitHub project. 
 
 ### Testing
-To test the model run the ```PyTorch_test_Sony.pu``` file. The results will be saved in '/PyTorch/test_result_Sony'.
+To test the model run the ```PyTorch_test_Sony.py``` file. The results will be saved in '/PyTorch/test_result_Sony'.
 
 ### Process results
 To process the results, run the ```process_results.py``` file. In that file you can change the dataset variable to either 'test' or 'validate' to decide which results should be processed. 
