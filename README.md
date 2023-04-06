@@ -36,6 +36,7 @@ Only the Sony dataset of the original paper has been used in this reproduction. 
 This dataset contains raw images. 
 The contents of the 'long' directory are the ground truths with a long-exposed image and those of the 'short' directory are the short-exposed images which are going to be used to be enlightened. 
 Furthermore, the filenames contain information, if the first digit is '0' the image is used for training, '1' is used for testing and '2' is used for validating. 
+Download the dataset in the 'dataset' folder for the code to run. 
 
 ### Training
 Train the Sony model by running the ```PyTorch_train_Sony.py``` file. The results and model will be saved in '/PyTorch/result_Sony' and '/PyTorch/model_Sony'. 
