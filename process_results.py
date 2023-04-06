@@ -1,11 +1,11 @@
 import cv2
 import numpy as np
 from skimage.metrics import structural_similarity as ssim
-from skimage.metrics import peak_signal_noise_ratio as psnr
 import os
 import csv
 import glob
 import rawpy
+from math import log10, sqrt
 
 from PyTorch_helpers import print_progress
 
@@ -26,6 +26,20 @@ test_fns = glob.glob(result_dir + '%s*.png' % num)
 test_ids = [int(os.path.basename(test_fn)[0:5]) for test_fn in test_fns]
 total = len(test_ids)
 test_ids = list(set(test_ids))
+
+
+def psnr(gt, input):
+    """
+    define psnr calculation
+    [source: https://www.geeksforgeeks.org/python-peak-signal-to-noise-ratio-psnr/]
+    """
+    mse = np.mean((gt - input) ** 2)
+    if (mse==0):
+        return 100
+    max_pixel = 255.0
+    psnr = 20 * log10(max_pixel / sqrt(mse))
+
+    return psnr
 
 
 # set up .csv file
@@ -64,7 +78,7 @@ with open(result_dir + 'results.csv', mode='w', newline='') as results_file:
 
         row = [test_id, psnr_final, ssim_final]
         writer.writerow(row)
-
+        # print(row)
 
 
 
