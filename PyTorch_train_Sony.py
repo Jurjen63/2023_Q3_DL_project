@@ -47,7 +47,7 @@ if DEBUG == 1:
     max_epoch = 101
     train_ids = train_ids[:10]
 
-# Raw data takes long to load. Keep them in memory after loaded [Original paper]
+# Raw data takes long to load. Keep them in memory after loaded
 gt_images = [None] * 6000
 input_images = {'300': [None] * len(train_ids), '250': [None] * len(train_ids), '100': [None] * len(train_ids)}
 
@@ -70,9 +70,7 @@ for epoch in range(last_epoch, max_epoch):
     if epoch > (max_epoch/2):
         learning_rate = learning_rate/1e3
 
-    # [code from paper]
     for ind in np.random.permutation(len(train_ids)):
-        # get the path from image id
         train_id = train_ids[ind]
         in_files = glob.glob(input_dir + '%05d_00*.ARW' % train_id)
         # in_path = in_files[np.random.random_integers(0, len(in_files) - 1)]
@@ -116,7 +114,6 @@ for epoch in range(last_epoch, max_epoch):
             gt_patch = np.transpose(gt_patch, (0, 2, 1, 3))
 
         input_patch = np.minimum(input_patch, 1.0)
-        # [end of paper code]
 
         # tensors are not supported with negative strides
         gt_patch = np.maximum(gt_patch, 0.0)
@@ -124,7 +121,7 @@ for epoch in range(last_epoch, max_epoch):
         input_img = torch.from_numpy(input_patch).permute(0, 3, 1, 2).to(device)
         gt_img = torch.from_numpy(gt_patch).permute(0, 3, 1, 2).to(device)
 
-        #
+    
         model.zero_grad()
         output = model(input_img)
         loss = torch.abs(output - gt_img).mean()
