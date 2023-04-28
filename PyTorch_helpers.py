@@ -115,7 +115,6 @@ class SeeInTheDarkModel(nn.Module):
 def pack_raw(raw, patch_size):
     """
     pack Bayer image to 4 channels
-    function used from the original paper
     """
     im = raw.raw_image_visible.astype(np.float32)
     im = np.maximum(im - patch_size, 0) / (16383 - patch_size)
